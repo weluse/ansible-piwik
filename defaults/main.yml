@@ -1,6 +1,7 @@
 ---
 # Default dependency list, based on Debian:
 piwik:
+  user: piwik
   mysql:
     host: 127.0.0.1
     admin_user: root
@@ -20,20 +21,22 @@ piwik:
     web_writable_dirs:
       - 'tmp'
       - 'config'
-  apache:
+  webserver:
     user: 'www-data'
     group: 'www-data'
-    service: 'apache2'
-  geoip: 
+    service: 'nginx'
+    config_name: 'piwik_nginx'
+    server_name: 'piwik.dev'
+  geoip:
     url: 'http://geolite.maxmind.com/download/geoip/database'
     file: 'GeoLiteCity.dat.gz'
     dest: 'GeoIPCity.dat'
   dependencies:
     deb:
       php:
-        - 'apache2'
+        - 'nginx'
+        - 'php5-fpm' # if php5 is installed before, libapache2-mod-php5 will be installed
         - 'php5'
-        - 'libapache2-mod-php5'
         - 'php5-mysql'
         - 'php5-gd'
         - 'php5-geoip'

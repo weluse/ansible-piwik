@@ -2,7 +2,7 @@
 # Fetch latest release GeoIP database
 - name: "Fetch latest GeoIP database"
   sudo: yes
-  action: get_url url={{ piwik.geoip.url }}/{{ piwik.geoip.file }} dest={{ piwik.settings.locations.dest }}/misc/ mode=0660 owner={{ piwik.apache.user }} group={{ piwik.apache.group }}
+  action: get_url url={{ piwik.geoip.url }}/{{ piwik.geoip.file }} dest={{ piwik.settings.locations.dest }}/misc/ mode=0660 owner={{ piwik.webserver.user }} group={{ piwik.webserver.group }}
   register: geoip_db
 
 # Extract GeoIP database

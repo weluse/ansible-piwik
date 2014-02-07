@@ -1,4 +1,18 @@
 ---
+- name: "Install ansible deps"
+  sudo: yes
+  action: ${ansible_pkg_mgr} pkg={{ item }} state=installed update-cache=yes
+  with_items:
+    - python-software-properties
+
+- name: "Add php repository"
+  sudo: yes
+  apt_repository: repo=ppa:ondrej/php5
+
+- name: "Add nginx repository"
+  sudo: yes
+  apt_repository: repo=ppa:nginx/stable
+
 # Install MySQL dependencies
 - name: "Install MySQL dependencies"
   sudo: yes

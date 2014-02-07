@@ -11,32 +11,27 @@
 - name: "Fetch latest Piwik release"
   sudo: yes
   action: get_url url={{ piwik.settings.url }}/{{ piwik.settings.file }} dest={{ piwik.settings.locations.tmp }} mode=0440 owner=root group=root
+  tags: piwik
 
 # Create Piwik destination folder
 - name: "Create Piwik destination folder"
   sudo: yes
-  action: file path={{ piwik.settings.locations.install }} owner={{ piwik.apache.user }} group={{ piwik.apache.group }} mode=0755 state=directory
+  action: file path={{ piwik.settings.locations.install }} owner={{ piwik.user }} group={{ piwik.user }} mode=0755 state=directory
+  tags: piwik
 
 # Extract package
 - name: "Extract Piwik zipfile"
   sudo: yes
   action: shell unzip -u {{ piwik.settings.locations.tmp }}/{{ piwik.settings.file }} -d {{ piwik.settings.locations.install }} creates={{ piwik.settings.locations.dest }}
+  tags: piwik
 
 # Create Piwik temp folders
 - name: "Create Piwik temp folders"
   sudo: yes
-  action: file path={{ piwik.settings.locations.dest }}/{{ item }} owner={{ piwik.apache.user }} group={{ piwik.apache.group }} mode=0755 state=directory
+  action: file path={{ piwik.settings.locations.dest }}/{{ item }} owner={{ piwik.user }} group={{ piwik.user }} mode=0755 state=directory
   with_items: piwik.settings.web_writable_dirs
+  tags: piwik
 
-# Add Piwik Apache alias
-- name: "Add Piwik Apache Alias"
-  sudo: yes
-  action: template src=piwik.j2 dest=/etc/{{ piwik.apache.service }}/conf.d/piwik.conf owner={{ piwik.apache.user }} group={{ piwik.apache.group }} mode=0640
-  notify:
-    - Restart Apache
-
-- name: "Start and enable Apache"
-  sudo: yes
-  action: service name={{ piwik.apache.service }} state=started enabled=yes
+- include: nginx.yml
 
 - include: geoip.yml

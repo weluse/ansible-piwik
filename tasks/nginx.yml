@@ -1,0 +1,43 @@
+---
+- name: "Write php fastcgi config"
+  sudo: yes
+  template: src=piwik_fastcgi.conf dest=/etc/php5/fpm/pool.d/piwik_fastcgi.conf mode=0644
+  tags: nginx
+  notify:
+    - Restart PHP
+    - Restart Webserver
+
+- name: "Write nginx fastcgi config"
+  sudo: yes
+  template: src=fastcgi.conf dest=/etc/nginx/fastcgi.conf mode=0644
+  tags: nginx
+  notify:
+    - Restart Webserver
+
+- name: "Write nginx default config"
+  sudo: yes
+  template: src=default dest=/etc/nginx/sites-available/default mode=0644
+  tags: nginx
+  notify:
+    - Restart Webserver
+
+- name: "Write nginx config"
+  sudo: yes
+  template: src={{ piwik.webserver.config_name }} dest=/etc/nginx/sites-available/{{ piwik.webserver.config_name }} mode=0644
+  tags: nginx
+  notify:
+    - Restart Webserver
+
+- name: "Enable nginx config"
+  sudo: yes
+  file: src=/etc/nginx/sites-available/{{ piwik.webserver.config_name }} dest=/etc/nginx/sites-enabled/{{ piwik.webserver.config_name }} state=link
+  tags: nginx
+  notify:
+    - Restart Webserver
+
+- name: "Write nginx.conf"
+  sudo: yes
+  template: src=nginx.conf dest=/etc/nginx/nginx.conf mode=0644
+  tags: nginx
+  notify:
+    - Restart Webserver

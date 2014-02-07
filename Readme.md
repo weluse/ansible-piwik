@@ -3,12 +3,14 @@
 ## Description
 
 *ansible-piwik* is an [Ansible](http://ansible.cc) role.
-The playbook contains tasks to provide a Piwik installation (with MySQL backend) running on Apache.
+The playbook contains tasks to provide a Piwik installation (with MySQL backend) running on Nginx.
+
+This fork replaces Apache with Nginx.
 
 ## Provides
 
 1. MySQL
-2. Apache
+2. Nginx
 3. PHP
 4. Latest Piwik codebase
 5. GeoIP database
@@ -16,21 +18,8 @@ The playbook contains tasks to provide a Piwik installation (with MySQL backend)
 ## Requires
 
 1. Ansible 1.4 or higher
-2. Debian 7.3 (other deb-based distros should work too)
+2. Debian 7.3 (other deb-based distros should work too) (this fork is tested on Ubuntu only)
 3. Vagrant (optional)
-
-Note: Tested on Fedora 20 but requires some custom host_vars see below:
-
-```
----
-piwik:
-  mysql:
-    service: 'mysqld'
-  apache:
-    user: 'apache'
-    group: 'apache'
-    service: 'httpd'
-```
 
 (If necessary adjust firewall rules to allow http...)
 
@@ -39,7 +28,7 @@ piwik:
 ### Get the code
 
 ```bash
-$ git clone git@github.com:ICTO/ansible-piwik.git
+$ git clone git@github.com:weluse/ansible-piwik.git
 ```
 
 ### Custom settings
@@ -98,6 +87,9 @@ piwik:
     piwik_pass: piwik
     piwik_db: piwik
 
+  webserver:
+    server_name: '<your server>'
+
   settings:
     ip_range: '192.168.33.1'
 ```
@@ -122,18 +114,18 @@ $ ansible-playbook -k -i ansible.host piwik.yml -u vagrant
 ### Example output
 
 ```
-SSH password: 
+SSH password:
 
-PLAY [Piwik] ****************************************************************** 
+PLAY [Piwik] ******************************************************************
 
-GATHERING FACTS *************************************************************** 
+GATHERING FACTS ***************************************************************
 ok: [127.0.0.1]
 
-TASK: [ansible-piwik | Install MySQL dependencies] **************************** 
+TASK: [ansible-piwik | Install MySQL dependencies] ****************************
 changed: [127.0.0.1] => (item=mysql-server)
 changed: [127.0.0.1] => (item=python-mysqldb)
 
-TASK: [ansible-piwik | Install PHP dependencies] ****************************** 
+TASK: [ansible-piwik | Install PHP dependencies] ******************************
 changed: [127.0.0.1] => (item=apache2)
 changed: [127.0.0.1] => (item=php5)
 ok: [127.0.0.1] => (item=libapache2-mod-php5)
@@ -142,46 +134,46 @@ changed: [127.0.0.1] => (item=php5-gd)
 changed: [127.0.0.1] => (item=php5-geoip)
 changed: [127.0.0.1] => (item=php5-ldap)
 
-TASK: [ansible-piwik | Install general dependencies] ************************** 
+TASK: [ansible-piwik | Install general dependencies] **************************
 changed: [127.0.0.1] => (item=unzip)
 
-TASK: [ansible-piwik | Check if empty MySQL admin password] ******************* 
+TASK: [ansible-piwik | Check if empty MySQL admin password] *******************
 changed: [127.0.0.1]
 
-TASK: [ansible-piwik | Change MySQL root password] **************************** 
+TASK: [ansible-piwik | Change MySQL root password] ****************************
 changed: [127.0.0.1]
 
-TASK: [ansible-piwik | Manage Piwik db] *************************************** 
+TASK: [ansible-piwik | Manage Piwik db] ***************************************
 changed: [127.0.0.1]
 
-TASK: [ansible-piwik | Manage Piwik db-user] ********************************** 
+TASK: [ansible-piwik | Manage Piwik db-user] **********************************
 changed: [127.0.0.1]
 
-TASK: [ansible-piwik | Fetch latest Piwik release] **************************** 
+TASK: [ansible-piwik | Fetch latest Piwik release] ****************************
 changed: [127.0.0.1]
 
-TASK: [ansible-piwik | Create Piwik destination folder] *********************** 
+TASK: [ansible-piwik | Create Piwik destination folder] ***********************
 changed: [127.0.0.1]
 
-TASK: [ansible-piwik | Extract Piwik zipfile] ********************************* 
+TASK: [ansible-piwik | Extract Piwik zipfile] *********************************
 changed: [127.0.0.1]
 
-TASK: [ansible-piwik | Create Piwik temp folders] ***************************** 
+TASK: [ansible-piwik | Create Piwik temp folders] *****************************
 changed: [127.0.0.1] => (item=tmp)
 changed: [127.0.0.1] => (item=config)
 
-TASK: [ansible-piwik | Add Piwik Apache Alias] ******************************** 
+TASK: [ansible-piwik | Add Piwik Apache Alias] ********************************
 changed: [127.0.0.1]
 
-TASK: [ansible-piwik | Fetch latest GeoIP database] *************************** 
+TASK: [ansible-piwik | Fetch latest GeoIP database] ***************************
 changed: [127.0.0.1]
 
-TASK: [ansible-piwik | Extract GeoIP database] ******************************** 
+TASK: [ansible-piwik | Extract GeoIP database] ********************************
 changed: [127.0.0.1]
 
-NOTIFIED: [ansible-piwik | Restart Apache] ************************************ 
+NOTIFIED: [ansible-piwik | Restart Apache] ************************************
 changed: [127.0.0.1]
 
-PLAY RECAP ******************************************************************** 
-127.0.0.1                  : ok=16   changed=15   unreachable=0    failed=0   
+PLAY RECAP ********************************************************************
+127.0.0.1                  : ok=16   changed=15   unreachable=0    failed=0
 ```

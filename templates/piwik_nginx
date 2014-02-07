@@ -1,0 +1,35 @@
+server {
+        listen [::]:80;
+        server_name {{ piwik.webserver.server_name }};
+
+        root {{ piwik.settings.locations.dest }};
+
+        access_log /home/{{ piwik.user }}/logs/access.log;
+        error_log /home/{{ piwik.user }}/logs/error.log;
+
+        charset utf-8;
+
+        location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar)$ {
+        }
+
+        location ~ ^/(piwik.php|piwik.js|index.php)$ {
+                include fastcgi.conf;
+                try_files $uri =404; # This is not needed if you have cgi.fix_pathinfo = 0 in php.ini (you should!)
+                fastcgi_pass unix:/home/{{ piwik.user }}/php.sock;
+                {% if piwik.settings.ip_range is defined %}
+                allow {{ piwik.settings.ip_range }};
+                deny all;
+                {% endif %}
+        }
+
+        # prevent nginx from serving dotfiles (.htaccess, .svn, .git, etc.)
+        location ~ /\. {
+                deny all;
+                access_log off;
+                log_not_found off;
+        }
+
+        location / {
+                deny  all;
+        }
+}

@@ -1,16 +1,20 @@
 ---
-- name: "Restart Apache"
+- name: "Restart Webserver"
   sudo: yes
-  action: service name={{ piwik.apache.service }} state=restarted
+  action: service name={{ piwik.webserver.service }} state=restarted
 
-- name: "Reload Apache"
+- name: "Reload Webserver"
   sudo: yes
-  action: service name={{ piwik.apache.service }} state=reloaded
+  action: service name={{ piwik.webserver.service }} state=reloaded
 
-- name: "Start Apache, if not running"
+- name: "Start Webserver, if not running"
   sudo: yes
-  action: service name={{ piwik.apache.service }} state=started
+  action: service name={{ piwik.webserver.service }} state=started
 
-- name: "Stop Apache, if running"
+- name: "Stop Webserver, if running"
   sudo: yes
-  action: service name={{ piwik.apache.service }} state=stopped
+  action: service name={{ piwik.webserver.service }} state=stopped
+
+- name: "Restart PHP"
+  sudo: yes
+  service: name=php5-fpm state=restarted
